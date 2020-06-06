@@ -1,0 +1,3 @@
+include ':thread_timber'
+include ':app'
+rootProject.name = "ThreadTimber"
