@@ -1,5 +1,7 @@
 # ThreadTimber
 
+[![](https://jitpack.io/v/TonyTangAndroid/ThreadTimber.svg)](https://jitpack.io/#TonyTangAndroid/ThreadTimber)
+
 ## What is this library about?
 **ThreadTimber** is a simple in-app Timber logger with thread info attached as prefix. 
 
