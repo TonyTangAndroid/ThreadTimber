@@ -25,6 +25,10 @@ public class ThreadTree extends Tree {
     this.threadTagPrefix = threadTagPrefix;
   }
 
+  public ThreadTree() {
+    this("");
+  }
+
   /**
    * Extract the tag which should be used for the message from the {@code element}. By default this
    * will use the class name without any anonymous class suffixes (e.g., {@code Foo$1} becomes
