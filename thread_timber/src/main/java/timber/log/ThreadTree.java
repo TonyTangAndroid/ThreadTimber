@@ -2,6 +2,7 @@ package timber.log;
 
 import android.os.Build;
 import android.util.Log;
+import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.jetbrains.annotations.NotNull;
@@ -9,7 +10,8 @@ import org.jetbrains.annotations.Nullable;
 import timber.log.Timber.Tree;
 
 /**
- * A {@link Tree Tree} for debug builds with thread info. Automatically infers the tag from the calling class.
+ * A {@link Tree Tree} for debug builds with thread info. Automatically infers the tag from the
+ * calling class.
  */
 public class ThreadTree extends Tree {
 
@@ -17,6 +19,11 @@ public class ThreadTree extends Tree {
   private static final int MAX_TAG_LENGTH = 23;
   private static final int CALL_STACK_INDEX = 5;
   private static final Pattern ANONYMOUS_CLASS = Pattern.compile("(\\$\\d+)+$");
+  private final String threadTagPrefix;
+
+  public ThreadTree(String threadTagPrefix) {
+    this.threadTagPrefix = threadTagPrefix;
+  }
 
   /**
    * Extract the tag which should be used for the message from the {@code element}. By default this
@@ -66,7 +73,7 @@ public class ThreadTree extends Tree {
    */
   @Override
   protected void log(int priority, String tag, @NotNull String message, Throwable t) {
-    message = Thread.currentThread().getName() + ":" + message;
+    message = formatThreadTag() + ":" + message;
     if (message.length() < MAX_LOG_LENGTH) {
       if (priority == Log.ASSERT) {
         Log.wtf(tag, message);
@@ -91,5 +98,9 @@ public class ThreadTree extends Tree {
         i = end;
       } while (i < newline);
     }
+  }
+
+  private String formatThreadTag() {
+    return String.format(Locale.getDefault(), "[%s#%s]", threadTagPrefix, Thread.currentThread().getName());
   }
 }

@@ -10,7 +10,7 @@ public class MainActivity extends AppCompatActivity {
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
-    Timber.plant(new ThreadTree());
+    Timber.plant(new ThreadTree("tony"));
     setContentView(R.layout.activity_main);
     Timber.i("Log message in Main Thread");
     new Thread(new Runnable() {
