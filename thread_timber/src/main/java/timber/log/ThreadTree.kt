@@ -1,110 +1,104 @@
-package timber.log;
+package timber.log
 
-import android.os.Build;
-import android.util.Log;
-import java.util.Locale;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-import timber.log.Timber.Tree;
+import android.annotation.SuppressLint
+import android.os.Build
+import android.util.Log
+import java.util.*
+import java.util.regex.Pattern
 
 /**
- * A {@link Tree Tree} for debug builds with thread info. Automatically infers the tag from the
+ * A [Tree] for debug builds with thread info. Automatically infers the tag from the
  * calling class.
  */
-public class ThreadTree extends Tree {
-
-  private static final int MAX_LOG_LENGTH = 4000;
-  private static final int MAX_TAG_LENGTH = 23;
-  private static final int CALL_STACK_INDEX = 5;
-  private static final Pattern ANONYMOUS_CLASS = Pattern.compile("(\\$\\d+)+$");
-  private final String threadTagPrefix;
-
-  public ThreadTree(String threadTagPrefix) {
-    this.threadTagPrefix = threadTagPrefix;
-  }
-
-  public ThreadTree() {
-    this("");
-  }
-
+class ThreadTree @JvmOverloads constructor(private val threadTagPrefix: String = "") :
+  Timber.Tree() {
   /**
-   * Extract the tag which should be used for the message from the {@code element}. By default this
-   * will use the class name without any anonymous class suffixes (e.g., {@code Foo$1} becomes
-   * {@code Foo}).
-   * <p>
-   * Note: This will not be called if a {@linkplain #tag(String) manual tag} was specified.
+   * Extract the tag which should be used for the message from the `element`. By default this
+   * will use the class name without any anonymous class suffixes (e.g., `Foo$1` becomes
+   * `Foo`).
+   *
+   *
+   * Note: This will not be called if a [manual tag][.tag] was specified.
    */
-  @Nullable
-  protected String createStackElementTag(@NotNull StackTraceElement element) {
-    String tag = element.getClassName();
-    Matcher m = ANONYMOUS_CLASS.matcher(tag);
+  protected fun createStackElementTag(element: StackTraceElement): String {
+    var tag = element.className
+    val m = ANONYMOUS_CLASS.matcher(tag)
     if (m.find()) {
-      tag = m.replaceAll("");
+      tag = m.replaceAll("")
     }
-    tag = tag.substring(tag.lastIndexOf('.') + 1);
+    tag = tag.substring(tag.lastIndexOf('.') + 1)
     // Tag length limit was removed in API 24.
-    if (tag.length() <= MAX_TAG_LENGTH || Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-      return tag;
-    }
-    return tag.substring(0, MAX_TAG_LENGTH);
+    return if (tag.length <= MAX_TAG_LENGTH || Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+      tag
+    } else tag.substring(0, MAX_TAG_LENGTH)
   }
 
-  @Override
-  final String getTag() {
-    String tag = super.getTag();
+  public override fun getTag(): String {
+    val tag = super.getTag()
     if (tag != null) {
-      return tag;
+      return tag
     }
 
     // DO NOT switch this to Thread.getCurrentThread().getStackTrace(). The test will pass
     // because Robolectric runs them on the JVM but on Android the elements are different.
-    StackTraceElement[] stackTrace = new Throwable().getStackTrace();
-    if (stackTrace.length <= CALL_STACK_INDEX) {
-      throw new IllegalStateException(
-          "Synthetic stacktrace didn't have enough elements: are you using proguard?");
-    }
-    return createStackElementTag(stackTrace[CALL_STACK_INDEX]);
+    val stackTrace = Throwable().stackTrace
+    check(stackTrace.size > CALL_STACK_INDEX) { "Synthetic stacktrace didn't have enough elements: are you using proguard?" }
+    return createStackElementTag(stackTrace[CALL_STACK_INDEX])
   }
 
   /**
-   * Break up {@code message} into maximum-length chunks (if needed) and send to either {@link
-   * Log#println(int, String, String) Log.println()} or {@link Log#wtf(String, String) Log.wtf()}
+   * Break up `message` into maximum-length chunks (if needed) and send to either [ ][Log.println] or [Log.wtf()][Log.wtf]
    * for logging.
-   * <p>
+   *
+   *
    * {@inheritDoc}
    */
-  @Override
-  protected void log(int priority, String tag, @NotNull String message, Throwable t) {
-    message = formatThreadTag() + ":" + message;
-    if (message.length() < MAX_LOG_LENGTH) {
+  @SuppressLint("LogNotTimber")
+  override fun log(priority: Int, tag: String?, rawMessage: String, t: Throwable?) {
+    var message: String = rawMessage
+    message = formatThreadTag() + ":" + message
+    if (message.length < MAX_LOG_LENGTH) {
       if (priority == Log.ASSERT) {
-        Log.wtf(tag, message);
+        Log.wtf(tag, message)
       } else {
-        Log.println(priority, tag, message);
+        Log.println(priority, tag, message)
       }
-      return;
+      return
     }
 
     // Split by line, then ensure each line can fit into Log's maximum length.
-    for (int i = 0, length = message.length(); i < length; i++) {
-      int newline = message.indexOf('\n', i);
-      newline = newline != -1 ? newline : length;
+    var i = 0
+    val length = message.length
+    while (i < length) {
+      var newline = message.indexOf('\n', i)
+      newline = if (newline != -1) newline else length
       do {
-        int end = Math.min(newline, i + MAX_LOG_LENGTH);
-        String part = message.substring(i, end);
+        val end = Math.min(newline, i + MAX_LOG_LENGTH)
+        val part = message.substring(i, end)
         if (priority == Log.ASSERT) {
-          Log.wtf(tag, part);
+          Log.wtf(tag, part)
         } else {
-          Log.println(priority, tag, part);
+          Log.println(priority, tag, part)
         }
-        i = end;
-      } while (i < newline);
+        i = end
+      } while (i < newline)
+      i++
     }
   }
 
-  private String formatThreadTag() {
-    return String.format(Locale.getDefault(), "[%s#%s]", threadTagPrefix, Thread.currentThread().getName());
+  private fun formatThreadTag(): String {
+    return String.format(
+      Locale.getDefault(),
+      "[%s#%s]",
+      threadTagPrefix,
+      Thread.currentThread().name
+    )
+  }
+
+  companion object {
+    private const val MAX_LOG_LENGTH = 4000
+    private const val MAX_TAG_LENGTH = 23
+    private const val CALL_STACK_INDEX = 5
+    private val ANONYMOUS_CLASS = Pattern.compile("(\\$\\d+)+$")
   }
 }
