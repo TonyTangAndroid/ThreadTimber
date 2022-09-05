@@ -1,16 +1,16 @@
-apply plugin: 'com.android.library'
-
+plugins {
+    id 'com.android.library'
+}
 android {
-    compileSdkVersion 33
+    compileSdk 33
 
     buildFeatures {
         buildConfig = false
     }
 
-
     defaultConfig {
-        minSdkVersion 22
-        targetSdkVersion 33
+        minSdk 22
+        targetSdk 33
         versionCode 1
         versionName "1.0"
 
