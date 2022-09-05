@@ -12,12 +12,13 @@ public class MainActivity extends AppCompatActivity {
     super.onCreate(savedInstanceState);
     Timber.plant(new ThreadTree("tony"));
     setContentView(R.layout.activity_main);
-    Timber.i("Log message in Main Thread");
-    new Thread(new Runnable() {
-      @Override
-      public void run() {
-        Timber.v("Log message in Worker Thread");
-      }
-    }).start();
+    Timber.i("log_message in Main Thread");
+    Timber.tag("tag_1").i("log_message in Main Thread with tag");
+    new Thread(this::logWorkerThread).start();
+  }
+
+  private void logWorkerThread() {
+    Timber.v("log_message in Worker Thread");
+    Timber.tag("tag_2").i("log_message in Worker Thread with tag");
   }
 }
