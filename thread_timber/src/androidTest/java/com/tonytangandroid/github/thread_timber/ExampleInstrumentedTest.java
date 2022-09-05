@@ -21,6 +21,6 @@ public class ExampleInstrumentedTest {
   public void useAppContext() {
     // Context of the app under test.
     Context appContext = InstrumentationRegistry.getInstrumentation().getTargetContext();
-    assertEquals("com.tonytangandroid.github.thread_timber.test", appContext.getPackageName());
+    assertEquals("com.tonytangandroid.github.thread.timber.test", appContext.getPackageName());
   }
 }
