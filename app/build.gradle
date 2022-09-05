@@ -28,8 +28,6 @@ android {
 }
 
 dependencies {
-    //noinspection GradleDependency
-    implementation 'com.jakewharton.timber:timber:4.7.1'
     implementation 'androidx.appcompat:appcompat:1.5.0'
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
 //    implementation 'com.github.TonyTangAndroid:ThreadTimber:0.3'
