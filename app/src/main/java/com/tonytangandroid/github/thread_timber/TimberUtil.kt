@@ -5,6 +5,7 @@ import android.util.Log
 import com.tonytangandroid.wood.WoodTree
 import timber.log.ThreadTree
 import timber.log.Timber
+import java.util.*
 
 object TimberUtil {
 
@@ -15,7 +16,7 @@ object TimberUtil {
       WoodTree(application,"tony_tracing")
         .retainDataFor(WoodTree.Period.FOREVER)
         .logLevel(Log.VERBOSE)
-        .limitToTheseTaggerList(listOf("persistable","HuntingLogger"))
+        .limitToTheseTaggerList(Arrays.asList("persistable","HuntingLogger"))
         .autoScroll(false)
         .maxLength(100000)
         .showNotification(true)
