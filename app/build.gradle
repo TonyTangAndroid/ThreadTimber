@@ -9,6 +9,7 @@ android {
     defaultConfig {
         applicationId "com.tonytangandroid.github.thread_timber"
         minSdk 22
+        //noinspection OldTargetApi
         targetSdk 33
         versionCode 1
         versionName "1.0"
@@ -36,8 +37,8 @@ android {
 dependencies {
     implementation 'androidx.appcompat:appcompat:1.5.0'
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
-    implementation 'com.github.TonyTangAndroid:ThreadTimber:0.4'
-//    implementation project(path: ':thread_timber')
+//    implementation 'com.github.TonyTangAndroid:ThreadTimber:0.4'
+    implementation project(path: ':thread_timber')
     debugImplementation 'com.github.TonyTangAndroid.Wood:wood:0.9.9.2'
     releaseImplementation 'com.github.TonyTangAndroid.Wood:wood-no-op:0.9.9.1'
     testImplementation 'junit:junit:4.13.2'
