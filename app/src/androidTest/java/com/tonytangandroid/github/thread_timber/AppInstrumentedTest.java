@@ -15,12 +15,12 @@ import static org.junit.Assert.*;
  * @see <a href="http://d.android.com/tools/testing">Testing documentation</a>
  */
 @RunWith(AndroidJUnit4.class)
-public class ExampleInstrumentedTest {
+public class AppInstrumentedTest {
 
   @Test
   public void useAppContext() {
     // Context of the app under test.
     Context appContext = InstrumentationRegistry.getInstrumentation().getTargetContext();
-    assertEquals("com.tonytangandroid.github.thread.timber.test", appContext.getPackageName());
+    assertEquals("com.tonytangandroid.github.thread_timber", appContext.getPackageName());
   }
 }
